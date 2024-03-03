@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReallySimpleChat</title>
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Helvetica Neue", Helvetica, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(0deg, #113757 12%, #1874C4 70%);
+            background-repeat: no-repeat;
+        }
+
+
+        .container {
+            display: block;
+            text-align: center;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .chat-container {
+            border: solid 2px;
+            border-radius: 5px;
+            background-color: aliceblue;
+            padding: 20px;
+            margin: 100px;
+        }
+
+        .chat-field {
+            border: solid 2px;
+            border-radius: 5px;
+        }
+
+        .field-title {
+            border: solid 2px;
+            border-radius: 5px;
+        }
+
+        .field-messages {
+            padding: 20px;
+        }
+
+        .input-chat {
+            display: inline;
+            margin: 10px;
+        }
+
+        .chat-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .chat-list li {
+            margin: 10px;
+            padding: 10px;
+            border: solid 2px;
+            border-radius: 5px;
+            background-color: #021E72;
+            color: aliceblue;
+        }
+
+        footer {
+            padding: 20px;
+            background-color: #021E72;
+            color: aliceblue;
+            align-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <h1>ReallySimpleChat</h1>
+    </div>
+</header>
+<section>
+    <div class="container">
+        <div class="chat-container">
+            <form action="su">
+                <div class="chat-field">
+                    <div class="field-title">
+                        <h3>Chat en vivo ✅</h3>
+                    </div>
+                    <div class="field-messages">
+                        <ul class="chat-list"></ul>
+                    </div>
+                </div>
+
+                <div class="input-chat">
+                    <div class="textbox-chat">
+                        <label>
+                            Chat: <input name="text-message" type="text"/>
+                        </label>
+                    </div>
+                    <div class="button-chat">
+                        <button type="submit">Enviar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</section>
+<footer>
+    <div class="footer-info">
+        <p>Creado por: Jonathan Narvaez | Santiago Ramirez</p>
+    </div>
+</footer>
+</body>
+<script type="module">
+    import {io} from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js';
+
+    const socket = io();
+
+    function appendMessage(message, username) {
+        const ul = document.querySelector('.chat-list');
+        const li = document.createElement('li');
+        //li.innerHTML = `${socket.id} >> ${message} - ${new Date().toLocaleTimeString()}`;
+        li.innerHTML = `${username} >> ${message} - ${new Date().toLocaleTimeString()}`;
+        ul.appendChild(li);
+    }
+
+    socket.on('message', (message) => {
+        appendMessage(message, socket.data.username);
+    });
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const input = document.getElementsByName('text-message')[0];
+        const message = input.value;
+        appendMessage(message);
+        socket.emit('message', message);
+        input.value = '';
+    });
+</script>
+</html>
